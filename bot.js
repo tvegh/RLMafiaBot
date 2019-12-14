@@ -119,6 +119,8 @@ client.on('message',  msg => {
                     .catch(() => console.error('The emojis done fucked up'));   
                 })
                 //store the message object that has all the reactions
+                //set timeout because we need to wait for the message to officially post before
+                //storing it in a variable
                 setTimeout(() => {reactMessage = client.user.lastMessage;},4000);
                 // msg.channel.fetchMessages({ limit: 1 }).then(messages => {
                 //     client.user.lastMessage
@@ -134,7 +136,6 @@ client.on('message',  msg => {
                 for (var i = 0; i < reactionArray.length; i++) {
                     //if the reaction is the mafiaEmoji, then add all the people
                     //who reacted with that emoji into correctGuessers
-                    //loop starts at 1 so we dont include the Bot in correctGuessers
                     if (reactionArray[i]._emoji.name === mafiaEmoji) {
                         for (var j = 0; j < reactionArray[i].users.array().length; j++) {
                             playersVoted.push(`<@!${reactionArray[i].users.array()[j].id}>`);
