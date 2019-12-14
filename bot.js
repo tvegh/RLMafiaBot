@@ -89,8 +89,12 @@ client.on('message',  msg => {
         case 3:
             if (msg.content === "!reveal") {
                 msg.channel.sendMessage("revealing");
+                msg.channel.sendMessage('The Mafia was: ' + players[mafia])
                 console.log("reactions: " + guesses);
             }
+            break;
+        case 4:
+
             break;
     }
 });
@@ -103,6 +107,7 @@ client.on('message',  msg => {
 
 client.login(process.env.API_KEY);
 //git test
+//another git test
 
 // start
 
