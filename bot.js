@@ -104,8 +104,6 @@ client.on('message',  msg => {
 client.login(process.env.API_KEY);
 //git test
 
-
-
 // start
 
 /* game states
