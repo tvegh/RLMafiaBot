@@ -109,19 +109,21 @@ client.on('message',  msg => {
                 }
                 msg.channel.send("React to this message with your vote!").then( messageReaction => {
                     messageReaction.react("1️⃣")
-                    .then(() => messageReaction.react("2️⃣"))
-                    .then(() => messageReaction.react("3️⃣"))
-                    .then(() => messageReaction.react("4️⃣"))
-                    .then(() => messageReaction.react("5️⃣"))
-                    .then(() => messageReaction.react("6️⃣"))
-                    .then(() => messageReaction.react("7️⃣"))
-                    .then(() => messageReaction.react("8️⃣"))
+                    .then(() => {if(players.length>1){messageReaction.react("2️⃣")}})
+                    .then(() => {if(players.length>2){messageReaction.react("3️⃣")}})
+                    .then(() => {if(players.length>3){messageReaction.react("4️⃣")}})
+                    .then(() => {if(players.length>4){messageReaction.react("5️⃣")}})
+                    .then(() => {if(players.length>5){messageReaction.react("6️⃣")}})
+                    .then(() => {if(players.length>6){messageReaction.react("7️⃣")}})
+                    .then(() => {if(players.length>7){messageReaction.react("8️⃣")}})
                     .catch(() => console.error('The emojis done fucked up'));   
                 })
                 //store the message object that has all the reactions
-                msg.channel.fetchMessages({ limit: 1 }).then(messages => {
-                    reactMessage = messages.first();
-                  })
+                setTimeout(() => {reactMessage = client.user.lastMessage;},4000);
+                // msg.channel.fetchMessages({ limit: 1 }).then(messages => {
+                //     client.user.lastMessage
+                //     reactMessage = messages.first();
+                //   })
                 state = 3;
             }
             break;
