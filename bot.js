@@ -1,6 +1,6 @@
+require('dotenv').config();
 const Discord = require('discord.js');
 const client = new Discord.Client();
-require('dotenv').config();
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -66,7 +66,6 @@ client.on('message',  msg => {
             break;
         case 2:
             if (msg.content === "!end") {
-        
                 msg.channel.sendMessage("Now time to guess who the mafia was:");
                 for (var i = 0; i < players.length; i++) {
                     msg.channel.sendMessage((i + 1) + ". " + players[i]);
@@ -99,13 +98,14 @@ client.on('message',  msg => {
     }
 });
 
+client.login(process.env.API_KEY);
+
 // 12/7 Edits - playing around with Collectors to check reactions - Adi 
 
 /*async function getMessage(msg) {
     return await msg.channel.sendMessage("React who you think the mafia was");
 }*/
 
-client.login(process.env.API_KEY);
 //git test
 //another git test
 
