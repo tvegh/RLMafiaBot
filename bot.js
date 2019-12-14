@@ -20,7 +20,7 @@ var correctGuessers = [];
 var correctGuessersString = '';
 var mafiaEmoji;
 
-const player_limit = 6;
+const player_limit = 8;
 
 client.on('message',  msg => {
     // console.log(`message: ${msg}`);
@@ -91,6 +91,8 @@ client.on('message',  msg => {
                     .then(() => messageReaction.react("4️⃣"))
                     .then(() => messageReaction.react("5️⃣"))
                     .then(() => messageReaction.react("6️⃣"))
+                    .then(() => messageReaction.react("7️⃣"))
+                    .then(() => messageReaction.react("8️⃣"))
                     .catch(() => console.error('The emojis done fucked up'));   
                 })
                 //store the message object that has all the reactions
