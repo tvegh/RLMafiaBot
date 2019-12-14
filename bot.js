@@ -19,8 +19,31 @@ var reactMessage;
 var correctGuessers = [];
 var correctGuessersString = '';
 var mafiaEmoji;
+var playersVoted = [];
+var duplicateVoters = [];
 
 const player_limit = 8;
+
+//stores duplicate values into duplicateVoters
+function getDuplicates(array) {
+    var valuesSoFar = Object.create(null);
+    for (var i = 0; i < array.length; ++i) {
+        //skips the bot's reactions
+        if (value == `<@!${client.user.id}>`) {
+            continue
+        }
+        var value = array[i];
+        if (value in valuesSoFar) {
+            duplicateVoters.push(value);
+        }
+        valuesSoFar[value] = true;
+    }
+}
+
+//filter function for returning only unique values in an array
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
 
 client.on('message',  msg => {
     // console.log(`message: ${msg}`);
@@ -44,7 +67,7 @@ client.on('message',  msg => {
                 msg.channel.send("Starting game, check dm's");
                 //pick mafia randomly, and store emoji to match the mafia player
                 mafia = Math.floor(Math.random() * players.length);
-                console.log(`mafia number is: ${mafia}`);
+                // console.log(`mafia number is: ${mafia}`);
                 switch(mafia) {
                     case 0:
                         mafiaEmoji = "1️⃣";
@@ -111,16 +134,46 @@ client.on('message',  msg => {
                     //who reacted with that emoji into correctGuessers
                     //loop starts at 1 so we dont include the Bot in correctGuessers
                     if (reactionArray[i]._emoji.name === mafiaEmoji) {
-                        for (var j = 1; j < reactionArray[i].users.array().length; j++) {
-                            correctGuessers.push(`<@!${reactionArray[i].users.array()[j].id}>`);
+                        for (var j = 0; j < reactionArray[i].users.array().length; j++) {
+                            playersVoted.push(`<@!${reactionArray[i].users.array()[j].id}>`);
+                            for (var k = 0; k < players.length; k++) {
+                                if (reactionArray[i].users.array()[j].id === players[k].id) {
+                                    correctGuessers.push(`<@!${reactionArray[i].users.array()[j].id}>`);
+                                }
+                            }
+                        }
+                    } else {
+                        for (var j = 0; j < reactionArray[i].users.array().length; j++) {
+                            playersVoted.push(`<@!${reactionArray[i].users.array()[j].id}>`);
                         }
                     }
                 }
-                //join all the correct guessers into a string, join by a comma
-                correctGuessersString = correctGuessers.join(', ');
+                for (var i = 0; i < playersVoted.length; i++) {
+                    if (correctGuessers.includes(playersVoted[i])) {
+                        correctGuessers = correctGuessers.filter(function(value, index, arr) {
+                            return value != playersVoted[i];
+                        })
+                    }
+                }
                 //reveal the mafia, then congratulate the correct guessers
                 msg.channel.sendMessage('The Mafia was: ' + players[mafia]);
-                msg.channel.sendMessage(`Congrats to ${correctGuessersString}!`);
+                if (correctGuessers.length > 0) {
+                    //join all the correct guessers into a string, join by a comma
+                    correctGuessersString = correctGuessers.join(', ');
+                    msg.channel.sendMessage(`Congrats to ${correctGuessersString}!`);
+                } else {
+                    msg.channel.send('Wow! No one guessed correctly! Fucking idiots!');
+                }
+                //store any duplicate voters in playersVoted
+                getDuplicates(playersVoted);
+                //filter out any duplicates in duplicateVoters, so theres only
+                //one instance of each person who voted more than once
+                var uniqueDuplicates = duplicateVoters.filter(onlyUnique);
+                //if there are duplicate voters, tell them to fuck off for cheating
+                if (uniqueDuplicates.length > 0) {
+                    var duplicateVotersString = uniqueDuplicates.join(', ');
+                    msg.channel.send(`Fuck off ${duplicateVotersString}. You voted more than once.`)
+                }
                 //reset the state to 0, and clear out the players and correctGuessers
                 //ready for a new game
                 players = [];
@@ -133,17 +186,13 @@ client.on('message',  msg => {
 
 client.login(process.env.API_KEY);
 
-//12-13 edit
+//12-14 edit
 //cleaned up the code a bit
 //added comments
 //added functionality to tell everyone who the mafia was
 //added functionality to tie mafia to reaction emoji
 //shows a 'congrats' message to those who picked the right emoji
 //removed !reset. we dont need it. the game just resets after !reveal on its own
-
-//there is an issue where sometimes, correctGuessers will be empty, even when there were reactions.
-//something to do with the loop at line 126. maybe its an issue with the loop starting at 1?
-//but it needs to start at 1, otherwise the bot will be included in correctGuessers. idk
-//it seems like waiting a little bit before using !end makes it work, which is fine
-//but who knows. maybe just needs some more testing.
+//added the functionality for when no one guesses correctly
+//added the ability to see if someone voted more than once and to tell them to fuck off
 // - TeaBone
